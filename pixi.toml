@@ -1,8 +1,8 @@
-# pixi config for **docs only**
+# pixi config for **docs & r2 file upload only**
 [workspace]
 channels = ["conda-forge"]
 name = "openfe"
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64", "osx-arm64"]
 
 [tasks]
 
@@ -13,21 +13,22 @@ no-default-feature = true
 channels = ["https://conda.anaconda.org/conda-forge"]
 
 [environments.docs.dependencies]
+python = "==3.13"
+
+[environments.docs.pypi-dependencies]
 autodoc-pydantic = ">=2.1"
 exorcist = "*"
 gitpython = "*"
 libsass = "*"
+mock = "*"
 myst-parser = "*"
 nbsphinx = "*"
 nbsphinx-link = "*"
-openfe-analysis = ">=0.5.0"
-openff-toolkit-base = ">=0.17.0"
-openff-units = "==0.3.1"
-openmm = "~=8.4"
+openmm = "!=8.1.0,!=8.3,>=8.0.0,<8.6.0"
 packaging = "*"
+pillow = "*"
 pip = ">=26.2.2"  # security incident https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576
 plugcli = ">=0.2.1"
-python = "==3.13"
 pydantic = "~=2.13.0"
 sphinx = "==7.2.6"  # TODO: debug "duplicate object" warning with later versions
 sphinx-autobuild = "*"  # TODO: make optional
@@ -36,17 +37,42 @@ sphinx-design = "*"
 sphinx-toolbox = "*"
 threadpoolctl = "*"
 tqdm = "*"
-mock = "*"
-pillow = "*"
 
-[environments.docs.pypi-dependencies]
 gufe = { git = "https://github.com/OpenFreeEnergy/gufe", rev = "main" }
-ofe-sphinx-theme = { git = "https://github.com/OpenFreeEnergy/ofe-sphinx-theme", rev = "v0.3.1" }
 kartograf = { git = "https://github.com/OpenFreeEnergy/kartograf", rev = "main" }
 konnektor = { git = "https://github.com/OpenFreeEnergy/konnektor", rev = "main" }
 lomap2 = { git = "https://github.com/OpenFreeEnergy/lomap", rev = "main" }
-openfe = { path = ".", editable = true }
+ofe-sphinx-theme = { git = "https://github.com/OpenFreeEnergy/ofe-sphinx-theme", rev = "v0.3.1" }
+open-free-energy = { path = ".", editable = true }
+openfe-analysis = { version = ">=0.5.0", index = "https://test.pypi.org/simple" }
+openff-units = { version = ">=0.5.0,<0.6", index = "https://test.pypi.org/simple" }
+openff-toolkit = { version = ">=0.17.0", index = "https://test.pypi.org/simple" }
+cinnabar = { version = "*", index = "https://test.pypi.org/simple" }
+openff-packmol = { version = "*", index = "https://test.pypi.org/simple" }
+mike-openmmforcefields = { version = "*", index = "https://test.pypi.org/simple" }
+openff-utilities = { version = "*", index = "https://test.pypi.org/simple" }
+openff-amber-ff-ports = { version = "*", index = "https://test.pypi.org/simple" }
+openff-forcefields = { version = "*", index = "https://test.pypi.org/simple" }
+openff-interchange = { version = "*", index = "https://test.pypi.org/simple" }
+openff-nagl = { version = "*", index = "https://test.pypi.org/simple" }
+
+
+[environments.docs.constraints]
+# Match the constraint in open-free-energy's pyproject.toml.
+rdkit = "<2026.3"
 
 [environments.docs.tasks]
 docs-build = { cmd = "sphinx-build -T -b html . _build/html", cwd = "docs" , description = "Build docs as html with sphinx."}
 docs-autobuild = { cmd = "sphinx-autobuild -T -b html . _build/html", cwd = "docs", description = "Serve auto-updating docs with sphinx-autodoc."}
+
+[feature.r2-upload.tasks]
+upload-data = "python scripts/upload_data.py"
+login-r2 = { cmd = "npm ci --no-audit --no-fund && npm exec -- wrangler login --use-keyring", cwd = "scripts/r2-upload" }
+
+[feature.r2-upload.dependencies]
+python = ">=3.12,<3.14"
+nodejs = ">=24,<25"
+rclone = ">=1.76.0,<2"
+
+[environments]
+r2-upload = { features = ["r2-upload"], no-default-feature = true }

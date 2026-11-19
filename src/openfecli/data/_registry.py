@@ -1,32 +1,31 @@
+
 """Registry for all remotely-stored CLI test data."""
 
 import pooch
 
+from openfe.data._registry import r2_entry
+
 POOCH_CACHE = pooch.os_cache("openfe")
-zenodo_cmet_data = dict(
-    base_url="doi:10.5281/zenodo.15200083/",
-    fname="cmet_results.tar.gz",
-    known_hash="md5:a4ca67a907f744c696b09660dc1eb8ec",
+
+zenodo_cmet_data = r2_entry(
+    "cmet_results.tar.gz",
+    "56f58010f969ccf6a60d8d1203603929cbd308ea968ce673c3f00af89a11c900",
 )
-zenodo_rbfe_serial_data = dict(
-    base_url="doi:10.5281/zenodo.15042470/",
-    fname="rbfe_results_serial_repeats.tar.gz",
-    known_hash="md5:2355ecc80e03242a4c7fcbf20cb45487",
+zenodo_rbfe_serial_data = r2_entry(
+    "rbfe_results_serial_repeats.tar.gz",
+    "f600015c94cd79fc9e8386871aabd51e4a1c2a591511a91f7745fcda98fdfe7f",
 )
-zenodo_rbfe_parallel_data = dict(
-    base_url="doi:10.5281/zenodo.15042470/",
-    fname="rbfe_results_parallel_repeats.tar.gz",
-    known_hash="md5:ff7313e14eb6f2940c6ffd50f2192181",
+zenodo_rbfe_parallel_data = r2_entry(
+    "rbfe_results_parallel_repeats.tar.gz",
+    "945105ed5ce8e19c1de2729bc32a70905f2bc89e241a4a34ebdbe3b01fa68ed5",
 )
-zenodo_abfe_data = dict(
-    base_url="doi:10.5281/zenodo.19498687/",
-    fname="abfe_results.zip",
-    known_hash="md5:44db4ce8195f4fe99989f8f57e0d7081",
+zenodo_abfe_data = r2_entry(
+    "abfe_results.zip",
+    "5bd016beba82baff6d66ff30dfcef9cb1923e683fc72252a129ce3c6eb258d10",
 )
-zenodo_septop_data = dict(
-    base_url="doi:10.5281/zenodo.21900838/",
-    fname="septop_results.zip",
-    known_hash="md5:eef1054bb926cdd71f07edd5a9c9dd02",
+zenodo_septop_data = r2_entry(
+    "septop_results.zip",
+    "76aa4130383a29f3b243e94e7a4ced2baf90b1a4834d9daf35aa32f76938cd55",
 )
 
 zenodo_data_registry = [

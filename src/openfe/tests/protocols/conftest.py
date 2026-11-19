@@ -26,6 +26,7 @@ from openfe.data._registry import (
     zenodo_septop_structural,
     zenodo_t4_lysozyme_traj,
 )
+from openfe.tests._pooch import fetch_and_extract
 
 
 @pytest.fixture
@@ -281,13 +282,10 @@ pooch_industry_benchmark_systems = pooch.create(
 
 @pytest.fixture
 def industry_benchmark_files():
-    pooch_industry_benchmark_systems.fetch(
-        "industry_benchmark_systems.zip", processor=pooch.Unzip()
+    return (
+        fetch_and_extract(pooch_industry_benchmark_systems, "industry_benchmark_systems.zip")
+        / "industry_benchmark_systems"
     )
-    cache_dir = pathlib.Path(
-        POOCH_CACHE / "industry_benchmark_systems.zip.unzip/industry_benchmark_systems"
-    )
-    return cache_dir
 
 
 pooch_t4_lysozyme = pooch.create(
@@ -300,11 +298,10 @@ pooch_t4_lysozyme = pooch.create(
 # session scope for downstream reuse
 @pytest.fixture(scope="session")
 def t4_lysozyme_trajectory_dir():
-    pooch_t4_lysozyme.fetch("t4_lysozyme_trajectory.zip", processor=pooch.Unzip())
-    cache_dir = pathlib.Path(
-        POOCH_CACHE / "t4_lysozyme_trajectory.zip.unzip/t4_lysozyme_trajectory"
+    return (
+        fetch_and_extract(pooch_t4_lysozyme, "t4_lysozyme_trajectory.zip")
+        / "t4_lysozyme_trajectory"
     )
-    return cache_dir
 
 
 @pytest.fixture
@@ -325,74 +322,90 @@ pooch_resume_data = pooch.create(
 
 @pytest.fixture(scope="session")
 def htop_trajectory_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "hybrid_top"
     filename = "simulation.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="session")
 def htop_checkpoint_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "hybrid_top"
     filename = "checkpoint.chk"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def ahfe_vac_trajectory_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "ahfes"
     filename = "vacuum.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def vac_checkpoint_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "ahfes"
     filename = "vacuum_checkpoint.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def ahfe_solv_trajectory_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "ahfes"
     filename = "solvent.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def ahfe_solv_checkpoint_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "ahfes"
     filename = "solvent_checkpoint.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def septop_solv_trajectory_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "septop"
     filename = "solvent.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 @pytest.fixture(scope="module")
 def septop_solv_checkpoint_path():
-    pooch_resume_data.fetch("multistate_checkpoints.zip", processor=pooch.Unzip())
-    topdir = "multistate_checkpoints.zip.unzip/multistate_checkpoints"
+    topdir = (
+        fetch_and_extract(pooch_resume_data, "multistate_checkpoints.zip")
+        / "multistate_checkpoints"
+    )
     subdir = "septop"
     filename = "solvent_checkpoint.nc"
-    return pathlib.Path(pooch.os_cache("openfe") / f"{topdir}/{subdir}/{filename}")
+    return topdir / subdir / filename
 
 
 pooch_md_resume_data = pooch.create(
@@ -417,9 +430,9 @@ pooch_septop_structural = pooch.create(
 
 @pytest.fixture(scope="session")
 def septop_structural_results_dir():
-    pooch_septop_structural.fetch("septop_structural_results.zip", processor=pooch.Unzip())
-    return pathlib.Path(
-        POOCH_CACHE / "septop_structural_results.zip.unzip/septop_structural_results"
+    return (
+        fetch_and_extract(pooch_septop_structural, "septop_structural_results.zip")
+        / "septop_structural_results"
     )
 
 
@@ -432,8 +445,10 @@ pooch_abfe_structural = pooch.create(
 
 @pytest.fixture(scope="session")
 def abfe_structural_results_dir():
-    pooch_abfe_structural.fetch("abfe_simulation_outputs.zip", processor=pooch.Unzip())
-    return pathlib.Path(POOCH_CACHE / "abfe_simulation_outputs.zip.unzip/abfe_simulation_outputs")
+    return (
+        fetch_and_extract(pooch_abfe_structural, "abfe_simulation_outputs.zip")
+        / "abfe_simulation_outputs"
+    )
 
 
 @pytest.fixture(scope="session")

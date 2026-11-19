@@ -7,6 +7,7 @@ import pooch
 import pytest
 from click.testing import CliRunner
 
+from openfe.tests._pooch import fetch_and_extract
 from openfecli.commands.gather import (
     _get_column,
     _get_legs_from_result_jsons,
@@ -238,10 +239,7 @@ solvent	lig_ejm_46	lig_jmc_28	23.4	0.8
 
 @pytest.fixture
 def cmet_result_dir() -> pathlib.Path:
-    pooch_cmet.fetch("cmet_results.tar.gz", processor=pooch.Untar())
-    result_dir = pathlib.Path(POOCH_CACHE) / "cmet_results.tar.gz.untar/cmet_results/"
-
-    return result_dir
+    return fetch_and_extract(pooch_cmet, "cmet_results.tar.gz") / "cmet_results"
 
 
 class TestGatherCMET:
@@ -349,22 +347,18 @@ class TestGatherCMET:
 
 @pytest.fixture
 def rbfe_results_serial_dir() -> pathlib.Path:
-    pooch_rbfe_serial.fetch("rbfe_results_serial_repeats.tar.gz", processor=pooch.Untar())
-    result_dir = (
-        pathlib.Path(POOCH_CACHE)
-        / "rbfe_results_serial_repeats.tar.gz.untar/rbfe_results_serial_repeats/"
+    return (
+        fetch_and_extract(pooch_rbfe_serial, "rbfe_results_serial_repeats.tar.gz")
+        / "rbfe_results_serial_repeats"
     )
-    return result_dir
 
 
 @pytest.fixture
 def rbfe_results_parallel_dir() -> pathlib.Path:
-    pooch_rbfe_parallel.fetch("rbfe_results_parallel_repeats.tar.gz", processor=pooch.Untar())
-    result_dir = (
-        pathlib.Path(POOCH_CACHE)
-        / "rbfe_results_parallel_repeats.tar.gz.untar/rbfe_results_parallel_repeats/"
+    return (
+        fetch_and_extract(pooch_rbfe_parallel, "rbfe_results_parallel_repeats.tar.gz")
+        / "rbfe_results_parallel_repeats"
     )
-    return result_dir
 
 
 @pytest.mark.skipif(
@@ -474,9 +468,7 @@ ZENODO_SEPTOP_DATA = pooch.create(
 @pytest.fixture
 def abfe_result_dir() -> pathlib.Path:
     """for pre-PR #1776 backwards compatability"""
-    ZENODO_ABFE_DATA.fetch("abfe_results.zip", processor=pooch.Unzip())
-    result_dir = pathlib.Path(POOCH_CACHE) / "abfe_results.zip.unzip/abfe_results/"
-    return result_dir
+    return fetch_and_extract(ZENODO_ABFE_DATA, "abfe_results.zip") / "abfe_results"
 
 
 class TestGatherABFE:
@@ -509,10 +501,8 @@ class TestGatherABFE:
 
 
 @pytest.fixture
-def septop_result_dir(tmp_path_factory) -> pathlib.Path:
-    ZENODO_SEPTOP_DATA.fetch("septop_results.zip", processor=pooch.Unzip())
-    result_dir = pathlib.Path(POOCH_CACHE) / "septop_results.zip.unzip/septop_results/"
-    return result_dir
+def septop_result_dir() -> pathlib.Path:
+    return fetch_and_extract(ZENODO_SEPTOP_DATA, "septop_results.zip") / "septop_results"
 
 
 class TestGatherSepTop:
