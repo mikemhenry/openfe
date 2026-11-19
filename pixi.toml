@@ -22,7 +22,7 @@ nbsphinx = "*"
 nbsphinx-link = "*"
 openfe-analysis = ">=0.5.0"
 openff-toolkit-base = ">=0.17.0"
-openff-units = "==0.3.1"
+openff-units = ">=0.5.0,<0.6"
 openmm = "~=8.4"
 packaging = "*"
 pip = ">=26.2.2"  # security incident https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576
@@ -46,6 +46,10 @@ kartograf = { git = "https://github.com/OpenFreeEnergy/kartograf", rev = "main" 
 konnektor = { git = "https://github.com/OpenFreeEnergy/konnektor", rev = "main" }
 lomap2 = { git = "https://github.com/OpenFreeEnergy/lomap", rev = "main" }
 open-free-energy = { path = ".", editable = true }
+
+[environments.docs.constraints]
+# Match the constraint in open-free-energy's pyproject.toml.
+rdkit = "<2026.3"
 
 [environments.docs.tasks]
 docs-build = { cmd = "sphinx-build -T -b html . _build/html", cwd = "docs" , description = "Build docs as html with sphinx."}
