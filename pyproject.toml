@@ -77,7 +77,7 @@ viz = [
 packages.find.where = [ "src" ]
 packages.find.namespaces = false
 include-package-data = true
-package-data.openfe = [ '"./src/openfe/tests/data/lomap_basic/toluene.mol2"' ]
+package-data.openfe = ["tests/data/lomap_basic/toluene.mol2"]
 zip-safe = false
 
 [tool.setuptools_scm]
