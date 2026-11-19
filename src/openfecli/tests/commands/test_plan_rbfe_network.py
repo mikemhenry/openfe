@@ -120,7 +120,9 @@ def test_plan_rbfe_network_main(request, protein_fixture, ligs_23_55):
         n_protocol_repeats=3,
         # use nagl to keep testing fast
         partial_charge_settings=OpenFFPartialChargeSettings(
-            partial_charge_method="nagl", nagl_model="openff-gnn-am1bcc-0.1.0-rc.3.pt"
+            partial_charge_method="nagl",
+            nagl_model="openff-gnn-am1bcc-0.1.0-rc.3.pt",
+            off_toolkit_backend="rdkit",
         ),
         processors=1,
         overwrite_charges=False,
@@ -152,6 +154,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
@@ -223,10 +226,12 @@ def test_plan_rbfe_network(mol_dir_args, request, protein_fixture, tmp_path, yam
         (["--n-protocol-repeats", "1"], 1),
     ],
 )
-def test_plan_rbfe_network_n_repeats(mol_dir_args, protein_args, input_n_repeat, expected_n_repeat):
+def test_plan_rbfe_network_n_repeats(
+    dummy_charge_dir_args, protein_args, input_n_repeat, expected_n_repeat
+):
     runner = CliRunner()
 
-    args = mol_dir_args + protein_args + input_n_repeat + ["--networks-only"]
+    args = dummy_charge_dir_args + protein_args + input_n_repeat + ["--networks-only"]
 
     with runner.isolated_filesystem():
         result = runner.invoke(plan_rbfe_network, args)
@@ -407,6 +412,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
@@ -450,6 +456,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
@@ -478,7 +485,9 @@ def test_custom_yaml_plan_radial_smoke_test(custom_yaml_radial, eg5_files, tmp_p
 def test_plan_rbfe_invalid_membrane(eg5_files):
     """eg5_protein has box vectors but no membrane. ProteinMembraneComponent validation should catch this."""
 
-    args = ["--protein-membrane", eg5_files[0], "-M", eg5_files[1]]
+    # Use precharged ligands; this tests protein-membrane validation, not charging.
+    charged_ligands = pathlib.Path(eg5_files[1]).with_name("eg5_ligands_am1bcc.sdf")
+    args = ["--protein-membrane", eg5_files[0], "-M", charged_ligands]
     runner = CliRunner()
     with pytest.raises(
         gufe.components.errors.ComponentValidationError,

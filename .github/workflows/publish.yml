@@ -134,7 +134,7 @@ jobs:
             echo "Expected exactly one wheel, found ${#wheels[@]}"
             exit 1
           fi
-          python -m pip install "${wheels[0]}[test]" --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple
+          python -m pip install "${wheels[0]}[viz]" pytest-xdist --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple
 
       - name: Verify installed wheel version
         env:
@@ -157,14 +157,51 @@ jobs:
           assert module.__version__ == installed_version
           PY
 
+      # Most thorough would be to hash every file that gets changed,
+      # but we just bump the cache every week to keep it simple.
+      - name: Get Week Number
+        id: get-week
+        run: echo "week=$(/bin/date -u "+%W-%Y")" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Restore Test Data Cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        id: restore-cache
+        with:
+          path: |
+            # linux cache location
+            ~/.cache/openfe
+            # osx cache location
+            ~/Library/Caches/openfe
+          key: pooch-${{ steps.get-week.outputs.week }}
+
+      - name: Download Test Data
+        # Pooch does its own caching, and will only pull down files that are new/changed
+        run: openfe test --download-only
+
+      - name: Cache New Test Data
+        id: cache-test-data
+        # always() means the data is cached even if downstream tests fail or are cancelled
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        with:
+          path: |
+            # linux cache location
+            ~/.cache/openfe
+            # osx cache location
+            ~/Library/Caches/openfe
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+
+
       - name: Run tests
         # Use isolated directory and --import-mode=importlib to avoid hiding
         # packing bugs by running in checked out repo
         working-directory: /tmp
         run: |
           # Run tests
-          # Use append mode to test the installed wheel instead of importing the source package, which lacks the generated _version.py.
-          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 $GITHUB_WORKSPACE/src/openfe/tests/
+          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 "$GITHUB_WORKSPACE/src/openfe/tests/"
+          # also test CLI
+          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 "$GITHUB_WORKSPACE/src/openfecli/tests/"
 
   publish:
     name: Publish to PyPI
