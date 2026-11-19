@@ -32,7 +32,7 @@ project = "openfe"
 copyright = "2022, The OpenFE Development Team"
 author = "The OpenFE Development Team"
 # don't include patch version (https://github.com/OpenFreeEnergy/openfe/issues/1261)
-version = f"{parse(version('openfe')).major}.{parse(version('openfe')).minor}"
+version = f"{parse(version('open-free-energy')).major}.{parse(version('open-free-energy')).minor}"
 
 # -- General configuration ---------------------------------------------------
 
@@ -216,7 +216,7 @@ nbsphinx_prolog = cleandoc(r"""
     {%- set gh_branch = "main" -%}
     {%- set path = env.doc2path(env.docname, base=None) -%}
     {%- if path.endswith(".nblink") -%}
-        {%- set path = env.metadata[env.docname]["nbsphinx-link-target"] -%}
+        {%- set path = env.metadata[env.docname]["nbsphinx-link-target"] | string -%}
     {%- endif -%}
     {%- if path.startswith("ExampleNotebooks/") -%}
         {%- set path = path.replace("ExampleNotebooks/", "", 1) -%}
