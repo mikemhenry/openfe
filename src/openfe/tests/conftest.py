@@ -3,6 +3,7 @@
 import gzip
 import os
 import pathlib
+import shutil
 import urllib.error
 import urllib.request
 from importlib import resources
@@ -26,6 +27,7 @@ from gufe import (
 )
 from gufe.tests.test_protocol import DummyProtocol
 from openff.toolkit import ForceField
+from openff.toolkit.utils.toolkits import AmberToolsToolkitWrapper
 from openff.units import unit
 from openff.units import unit as offunit
 from openmm import unit as ommunit
@@ -38,6 +40,12 @@ from openfe.protocols.openmm_rfe import RelativeHybridTopologyProtocol
 from openfe.protocols.openmm_rfe._rfe_utils.relative import HybridTopologyFactory
 from openfe.protocols.openmm_utils.serialization import deserialize
 from openfe.tests.protocols.openmm_rfe.helpers import make_htf
+
+# Check both the OpenFF wrapper and the AmberTools executables it depends on.
+HAS_AMBERTOOLS = AmberToolsToolkitWrapper.is_available() and all(
+    shutil.which(executable) is not None for executable in ("antechamber", "parmchk2", "sqm")
+)
+requires_ambertools = pytest.mark.skipif(not HAS_AMBERTOOLS, reason="needs AmberTools")
 
 
 class SlowTests:

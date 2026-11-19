@@ -33,6 +33,7 @@ from openfe.protocols.openmm_utils.charge_generation import (
     HAS_NAGL,
     HAS_OPENEYE,
 )
+from openfe.tests.conftest import requires_ambertools
 
 from .utils import UNIT_TYPES, _get_units
 
@@ -622,7 +623,7 @@ def test_dry_run_solv_user_charges_benzene(
 @pytest.mark.parametrize(
     "method, backend, ref_key",
     [
-        ("am1bcc", "ambertools", "ambertools"),
+        pytest.param("am1bcc", "ambertools", "ambertools", marks=requires_ambertools),
         pytest.param(
             "am1bcc",
             "openeye",

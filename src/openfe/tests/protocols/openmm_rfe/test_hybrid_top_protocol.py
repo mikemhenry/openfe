@@ -55,7 +55,7 @@ from openfe.protocols.openmm_utils.charge_generation import (
 from openfe.protocols.openmm_utils.offmolecule_utils import (
     _set_offmol_metadata,
 )
-from openfe.tests.conftest import single_to_triple_bond_mapping
+from openfe.tests.conftest import requires_ambertools, single_to_triple_bond_mapping
 
 
 def _get_units(protocol_units, unit_type):
@@ -359,6 +359,7 @@ def test_setup_dry_sim_default_vacuum(
     )
 
 
+@requires_ambertools
 def test_setup_gaff_vacuum(
     benzene_vacuum_system, toluene_vacuum_system, benzene_to_toluene_mapping, vac_settings, tmp_path
 ):
@@ -475,6 +476,7 @@ $$$$
 """
 
 
+@requires_ambertools
 def test_setup_core_element_change(vac_settings, tmp_path):
     benz = openfe.SmallMoleculeComponent(Chem.MolFromMolBlock(BENZ, removeHs=False))
     pyr = openfe.SmallMoleculeComponent(Chem.MolFromMolBlock(PYRIDINE, removeHs=False))
@@ -735,7 +737,7 @@ def test_setup_ligand_system_cutoff(
 @pytest.mark.parametrize(
     "method, backend, ref_key",
     [
-        ("am1bcc", "ambertools", "ambertools"),
+        pytest.param("am1bcc", "ambertools", "ambertools", marks=requires_ambertools),
         pytest.param(
             "am1bcc",
             "openeye",
@@ -2230,6 +2232,7 @@ def _assert_total_charge(system, atom_classes, chgA, chgB):
     assert chgB == pytest.approx(np.sum(stateB_charges))
 
 
+@requires_ambertools
 def test_dry_run_alchemwater_solvent(benzene_to_benzoic_mapping, solv_settings, tmp_path):
     stateA_system = openfe.ChemicalSystem(
         {
