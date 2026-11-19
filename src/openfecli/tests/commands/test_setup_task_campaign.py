@@ -1,4 +1,5 @@
 import pathlib
+import tarfile
 from importlib import resources
 
 import pytest
@@ -10,11 +11,15 @@ from ..utils import assert_click_success
 
 
 @pytest.fixture
-def alchemical_network_mcl1_path() -> pathlib.Path:
-    with resources.path(
-        "openfe.tests.data.warehouse_data", "alchemicalNetwork_mc1_small.json"
-    ) as fspath:
-        return fspath
+def alchemical_network_mcl1_path(tmp_path: pathlib.Path) -> pathlib.Path:
+    # The test data is distributed as a tarball, not an importable package.
+    archive = resources.files("openfe.tests.data") / "warehouse_data.tar.gz"
+    with archive.open("rb") as stream, tarfile.open(fileobj=stream, mode="r:gz") as tar:
+        data = tar.extractfile("warehouse_data/alchemicalNetwork_mc1_small.json")
+        assert data is not None
+        path = tmp_path / "alchemicalNetwork_mc1_small.json"
+        path.write_bytes(data.read())
+    return path
 
 
 def test_setup_task_campaign(alchemical_network_mcl1_path):

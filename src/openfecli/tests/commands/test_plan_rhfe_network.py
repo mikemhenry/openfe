@@ -87,7 +87,9 @@ def test_plan_rhfe_network_main():
         solvent=solvent_component,
         n_protocol_repeats=3,
         partial_charge_settings=OpenFFPartialChargeSettings(
-            partial_charge_method="nagl", nagl_model="openff-gnn-am1bcc-0.1.0-rc.3.pt"
+            partial_charge_method="nagl",
+            nagl_model="openff-gnn-am1bcc-0.1.0-rc.3.pt",
+            off_toolkit_backend="rdkit",
         ),
         processors=1,
         overwrite_charges=False,
@@ -108,6 +110,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
@@ -186,6 +189,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
