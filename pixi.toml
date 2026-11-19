@@ -45,7 +45,7 @@ ofe-sphinx-theme = { git = "https://github.com/OpenFreeEnergy/ofe-sphinx-theme",
 kartograf = { git = "https://github.com/OpenFreeEnergy/kartograf", rev = "main" }
 konnektor = { git = "https://github.com/OpenFreeEnergy/konnektor", rev = "main" }
 lomap2 = { git = "https://github.com/OpenFreeEnergy/lomap", rev = "main" }
-openfe = { path = ".", editable = true }
+open-free-energy = { path = ".", editable = true }
 
 [environments.docs.tasks]
 docs-build = { cmd = "sphinx-build -T -b html . _build/html", cwd = "docs" , description = "Build docs as html with sphinx."}
