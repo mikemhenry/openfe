@@ -67,7 +67,7 @@ docs-autobuild = { cmd = "sphinx-autobuild -T -b html . _build/html", cwd = "doc
 
 [feature.r2-upload.tasks]
 upload-data = "python scripts/upload_data.py"
-login-r2 = { cmd = "npm ci --no-audit --no-fund && npm exec -- wrangler login", cwd = "scripts/r2-upload" }
+login-r2 = { cmd = "npm ci --no-audit --no-fund && npm exec -- wrangler login --use-keyring", cwd = "scripts/r2-upload" }
 
 [feature.r2-upload.dependencies]
 python = ">=3.12,<3.14"
