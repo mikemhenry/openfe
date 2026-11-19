@@ -1,4 +1,4 @@
-# pixi config for **docs only**
+# pixi config for **docs & r2 file upload only**
 [workspace]
 channels = ["conda-forge"]
 name = "openfe"
@@ -50,3 +50,15 @@ openfe = { path = ".", editable = true }
 [environments.docs.tasks]
 docs-build = { cmd = "sphinx-build -T -b html . _build/html", cwd = "docs" , description = "Build docs as html with sphinx."}
 docs-autobuild = { cmd = "sphinx-autobuild -T -b html . _build/html", cwd = "docs", description = "Serve auto-updating docs with sphinx-autodoc."}
+
+[feature.r2-upload.tasks]
+upload-data = "python scripts/upload_data.py"
+login-r2 = { cmd = "npm ci --no-audit --no-fund && npm exec -- wrangler login", cwd = "scripts/r2-upload" }
+
+[feature.r2-upload.dependencies]
+python = ">=3.12,<3.14"
+nodejs = ">=24,<25"
+rclone = ">=1.76.0,<2"
+
+[environments]
+r2-upload = { features = ["r2-upload"], no-default-feature = true }
