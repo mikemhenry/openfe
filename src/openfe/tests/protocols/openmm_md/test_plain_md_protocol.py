@@ -32,7 +32,7 @@ from openfe.protocols.openmm_utils.charge_generation import (
     HAS_NAGL,
     HAS_OPENEYE,
 )
-from openfe.tests.conftest import HAS_ESPALOMA
+from openfe.tests.conftest import HAS_ESPALOMA, requires_ambertools
 
 
 @pytest.fixture()
@@ -220,6 +220,7 @@ def test_dry_run_ffcache_none_vacuum(benzene_vacuum_system, vac_settings, tmp_pa
     dag_unit.run(dry=True, scratch_basepath=tmp_path, shared_basepath=tmp_path)["debug"]["system"]
 
 
+@requires_ambertools
 def test_dry_run_gaff_vacuum(benzene_vacuum_system, vac_settings, tmp_path):
     vac_settings.forcefield_settings.small_molecule_forcefield = "gaff-2.11"
 
@@ -277,7 +278,7 @@ def test_dry_run_espaloma_vacuum_user_charges(
 @pytest.mark.parametrize(
     "method, backend, ref_key",
     [
-        ("am1bcc", "ambertools", "ambertools"),
+        pytest.param("am1bcc", "ambertools", "ambertools", marks=requires_ambertools),
         pytest.param(
             "am1bcc",
             "openeye",

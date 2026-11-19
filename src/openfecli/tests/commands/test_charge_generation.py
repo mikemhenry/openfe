@@ -14,6 +14,7 @@ from openfe.protocols.openmm_utils.charge_generation import (
     HAS_NAGL,
     HAS_OPENEYE,
 )
+from openfe.tests.conftest import requires_ambertools
 from openfecli.commands.generate_partial_charges import charge_molecules
 
 
@@ -24,6 +25,7 @@ partial_charge:
   method: nagl
   settings:
     nagl_model: openff-gnn-am1bcc-0.1.0-rc.3.pt
+    off_toolkit_backend: rdkit
 """
 
 
@@ -70,6 +72,7 @@ def test_write_charges_to_input(methane, tmp_path):
             )
 
 
+@requires_ambertools
 def test_charge_molecules_default(methane, tmp_path, caplog):
     runner = CliRunner()
     mol_path = tmp_path / "methane.sdf"
@@ -94,7 +97,12 @@ def test_charge_molecules_default(methane, tmp_path, caplog):
     "overwrite, expected_charges",
     [
         pytest.param(False, [-1.0, 0.25, 0.25, 0.25, 0.25], id="Don't overwrite"),
-        pytest.param(True, [-0.1084, 0.0271, 0.0271, 0.0271, 0.0271], id="Overwrite"),
+        pytest.param(
+            True,
+            [-0.1084, 0.0271, 0.0271, 0.0271, 0.0271],
+            id="Overwrite",
+            marks=requires_ambertools,
+        ),
     ],
 )
 def test_charge_molecules_overwrite(
@@ -239,7 +247,7 @@ def test_charge_molecules_from_forcefield(methane, tmp_path):
     settings = {
         "partial_charge": {
             "method": "forcefield",
-            "settings": {"forcefields": ["openff-2.3.0"]},
+            "settings": {"forcefields": ["openff-2.3.0"], "off_toolkit_backend": "rdkit"},
         }
     }
 

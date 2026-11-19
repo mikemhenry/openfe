@@ -6,4 +6,4 @@ from importlib.metadata import version
 from . import commands
 from .plugins import OFECommandPlugin
 
-__version__ = version("openfe")
+__version__ = version("open-free-energy")

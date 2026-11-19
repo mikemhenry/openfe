@@ -50,7 +50,7 @@ from openfe.protocols.openmm_utils.offmolecule_utils import (
     assign_offmol_residue_metadata,
 )
 
-from ..conftest import HAS_INTERNET
+from ..conftest import HAS_AMBERTOOLS, HAS_INTERNET, requires_ambertools
 
 
 @pytest.mark.parametrize(
@@ -717,7 +717,9 @@ class TestSystemCreation:
         # Create offmol
         offmol = OFFMol.from_smiles("[O-]C=O")
         offmol.generate_conformers()
-        offmol.assign_partial_charges(partial_charge_method="am1bcc")
+        offmol.assign_partial_charges(
+            partial_charge_method="gasteiger", toolkit_registry=RDKitToolkitWrapper()
+        )
         smc = openfe.SmallMoleculeComponent.from_openff(offmol)
 
         ffsets, intsets, thermosets = get_settings
@@ -947,7 +949,7 @@ class TestOFFPartialCharge:
     def uncharged_mol(self, CN_molecule):
         return CN_molecule.to_openff()
 
-    @pytest.mark.parametrize("overwrite", [True, False])
+    @pytest.mark.parametrize("overwrite", [pytest.param(True, marks=requires_ambertools), False])
     def test_offmol_chg_gen_charged_overwrite(self, overwrite, uncharged_mol):
         chg = [1 for _ in range(len(uncharged_mol.atoms))] * unit.elementary_charge
 
@@ -995,6 +997,7 @@ class TestOFFPartialCharge:
                 nagl_model=None,
             )
 
+    @requires_ambertools
     def test_no_conformers(self, uncharged_mol):
         uncharged_mol._conformers = None
 
@@ -1008,6 +1011,7 @@ class TestOFFPartialCharge:
                 nagl_model=None,
             )
 
+    @requires_ambertools
     def test_too_many_existing_conformers(self, uncharged_mol):
         uncharged_mol.generate_conformers(
             n_conformers=2,
@@ -1025,6 +1029,7 @@ class TestOFFPartialCharge:
                 nagl_model=None,
             )
 
+    @requires_ambertools
     def test_too_many_requested_conformers(self, uncharged_mol):
         with pytest.raises(ValueError, match="5 conformers were requested"):
             charge_generation.assign_offmol_partial_charges(
@@ -1046,6 +1051,7 @@ class TestOFFPartialCharge:
                 toolkit_registry=ToolkitRegistry([RDKitToolkitWrapper()]),
             )
 
+    @requires_ambertools
     @pytest.mark.slow
     def test_am1bcc_conformer_nochange(self, eg5_ligands_uncharged):
         lig = eg5_ligands_uncharged[0].to_openff()
@@ -1122,7 +1128,7 @@ class TestOFFPartialCharge:
     @pytest.mark.parametrize(
         "method, backend, ref_key, confs",
         [
-            ("am1bcc", "ambertools", "ambertools", None),
+            pytest.param("am1bcc", "ambertools", "ambertools", None, marks=requires_ambertools),
             pytest.param(
                 "am1bcc",
                 "openeye",
@@ -1159,8 +1165,11 @@ class TestOFFPartialCharge:
                 "nagl",
                 None,
                 marks=pytest.mark.skipif(
-                    not HAS_NAGL or HAS_OPENEYE or sys.platform.startswith("darwin"),
-                    reason="needs NAGL (without oechem) and/or on macos",
+                    not HAS_AMBERTOOLS
+                    or not HAS_NAGL
+                    or HAS_OPENEYE
+                    or sys.platform.startswith("darwin"),
+                    reason="needs AmberTools and NAGL (without oechem) and/or on macos",
                 ),
             ),
             pytest.param(
@@ -1189,8 +1198,8 @@ class TestOFFPartialCharge:
                 "espaloma",
                 None,
                 marks=pytest.mark.skipif(
-                    not HAS_ESPALOMA_CHARGE,
-                    reason="needs espaloma charge",
+                    not HAS_AMBERTOOLS or not HAS_ESPALOMA_CHARGE,
+                    reason="needs AmberTools and espaloma charge",
                 ),
             ),
         ],
@@ -1396,6 +1405,7 @@ class TestOFFPartialCharge:
         # the libary charges for water in tip4p_fb.offxml are all zero, so we expect the charges to be zero
         assert_allclose(offmol.partial_charges.m, np.array([0.0, 0.0, 0.0]), rtol=1e-4)
 
+    @requires_ambertools
     def test_bulk_raise_errors(self, bodipy_molecules):
         # Make sure that bulk charge assignment caches errors and returns a helpful error message when it fails
         with pytest.raises(
@@ -1414,6 +1424,7 @@ class TestOFFPartialCharge:
                 raise_errors=True,
             )
 
+    @requires_ambertools
     @pytest.mark.slow
     def test_bulk_raise_errors_multi_processors(self, bodipy_molecules):
         # Make sure that bulk charge assignment caches errors and returns a helpful error message when it fails
@@ -1434,6 +1445,7 @@ class TestOFFPartialCharge:
                 raise_errors=True,
             )
 
+    @requires_ambertools
     def test_bulk_ignore_errors(self, bodipy_molecules):
         # Make sure errors are ignored when raise_errors=False
         # and that a warning is used to indicate that some molecules failed to generate charges

@@ -85,4 +85,4 @@ from .setup import (
 )
 from .storage import FileSystemWarehouse
 
-__version__ = version("openfe")
+__version__ = version("open-free-energy")

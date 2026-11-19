@@ -6,7 +6,7 @@ requires = [
 ]
 
 [project]
-name = "openfe"
+name = "open-free-energy"
 description = ""
 readme = "README.md"
 license = "MIT"
@@ -26,14 +26,58 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Chemistry",
 ]
 dynamic = [ "version" ]
+dependencies = [
+  "cinnabar~=0.6.0",
+  "citeproc-py <0.10.3",  # the default harvard1 style used by duecredit was changed in 0.10.3, this avoids needing an extra dependency on citeproc-py-styles
+  "click >=8.2.0, <8.5.0",  # until the deprecation warnings are addressed by https://github.com/OpenFreeEnergy/openfe/pull/2251
+  "duecredit",
+  "exorcist ~= 0.1.0",
+  "gufe ~=1.13.1",
+  "kartograf ~=2.0.0",
+  "konnektor ~=0.5.0",
+  "lomap2 ~=3.3.0",
+  "matplotlib",
+  "networkx",
+  "numpy",
+  "openfe-analysis ~=0.5.0",
+  # I bumped the upper and lower pin of the toolkit since the yanked release confuses pypi
+  "openff-toolkit >=0.20.1,<0.21",  # upper pinning 0.21, just so we can test it before conda-forge pulls it in.
+  # I bumped this to ~=0.5.0, it was ~=0.4.0
+  "openff-units ~=0.5.0",  # adds pydantic 2.13 support
+  "openff-packmol",
+  "openmm !=8.1.0,!=8.3,>=8.0.0,<8.5.0",  # omit 8.3.0 and 8.3.1 due to https://github.com/openmm/openmm/pull/5069
+  "mike-openmmforcefields >=0.15.1",  # min needed for https://github.com/openmm/openmmforcefields/pull/414
+  # I bumped  this to ~=0.27.0 from ~=0.26.0 since the newer one is the first we have on pypi
+  "openmmtools ~=0.27.0",  # fix to support membrane barostat: https://github.com/choderalab/openmmtools/pull/798, and wait to test against 0.27
+  "packaging",
+  "pint >=0.24.0",
+  "plugcli",
+  "pooch >=1.9.0",  # min needed for https://github.com/fatiando/pooch/issues/502
+  "pydantic ~=2.13.0", # don't trust that 2.14 won't break
+  "pygraphviz",
+  "pymbar >=4.0",
+  "pytest < 9.2.0",
+  "pytest-regressions",
+  "pytest-rerunfailures",
+  "rdkit<2026.03",  # https://github.com/OpenFreeEnergy/openfe/issues/2067
+  "rich",
+  "threadpoolctl",
+  "typing-extensions",
+]
 urls = { Homepage = "https://github.com/OpenFreeEnergy/openfe" }
 scripts.openfe = "openfecli.cli:main"
+
+[project.optional-dependencies]
+viz = [
+  "jq",
+  "py3dmol",
+]
 
 [tool.setuptools]
 packages.find.where = [ "src" ]
 packages.find.namespaces = false
 include-package-data = true
-package-data.openfe = [ '"./src/openfe/tests/data/lomap_basic/toluene.mol2"' ]
+package-data.openfe = ["tests/data/lomap_basic/toluene.mol2"]
 zip-safe = false
 
 [tool.setuptools_scm]
