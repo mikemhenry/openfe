@@ -17,6 +17,11 @@ on:
         required: true
         type: string
 
+# Cancel if a new commit is made on a PR but never interrupt a publishing run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    
 # Deny permissions by default. Each job gets only what it needs.
 permissions: {}
 
