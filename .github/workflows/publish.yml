@@ -158,7 +158,9 @@ jobs:
         working-directory: /tmp
         run: |
           # Run tests
-          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 $GITHUB_WORKSPACE/src/openfe/tests/
+          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 "$GITHUB_WORKSPACE/src/openfe/tests/"
+          # also test CLI
+          python -m pytest -n auto --import-mode=importlib -v --color=yes --durations=10 "$GITHUB_WORKSPACE/src/openfecli/tests/"
 
   publish:
     name: Publish to PyPI
