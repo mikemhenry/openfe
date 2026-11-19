@@ -184,3 +184,6 @@ rever/
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+# node modules for wrangler
+scripts/r2-upload/node_modules/
